@@ -1,0 +1,55 @@
+#!/bin/sh
+
+CMD="$0"
+WORK_DIR=$PWD
+CMD_DIR=`dirname "$CMD"`
+cd "$CMD_DIR/.."
+HOST="0.0.0.0"
+PORT=$1
+
+if [ -z "$PORT" ]; then
+    PORT="3131"
+fi
+
+TAG="$PORT"
+
+bin/run.js kill $PORT
+make update
+
+case `uname -a` in
+Linux*x86_64*)  echo "Linux 64 bit"
+    bin/run.js start -t:"$TAG" server.js -l "$HOST" -p "$PORT" -w "$WORK_DIR" -a x-www-browser
+    ;;
+
+Linux*i686*)  echo "Linux 32 bit"
+    bin/run.js start -t:"$TAG" server.js -l "$HOST" -p "$PORT" -w "$WORK_DIR" -a x-www-browser
+    ;;
+
+Linux*arm*)  echo "Linux ARM"
+    bin/run.js start -t:"$TAG" server.js -l "$HOST" -p "$PORT" -w "$WORK_DIR" -a x-www-browser
+    ;;
+
+Darwin*)  echo  "OSX"
+    bin/run.js start -t:"$TAG" server.js "$@" "$OPTIONS" -a open
+    ;;
+
+FreeBSD*64*) echo "FreeBSD 64 bit"
+    bin/run.js start -t:"$TAG" server.js "$@" "$OPTIONS" -a open
+    ;;
+
+CYGWIN*)  echo  "Cygwin"
+    bin/run.js start -t:"$TAG" server.js "$@" "$OPTIONS" -a "cmd /c start"
+    ;;
+
+MING*)  echo  "MingW"
+    bin/run.js start -t:"$TAG" server.js "$@" "$OPTIONS" -a "cmd /c start"
+    ;;
+
+SunOS*)  echo  "Solaris"
+    bin/run.js start -t:"$TAG" server.js "$@" "$OPTIONS"
+    ;;
+
+
+*) echo "Unknown OS"
+   ;;
+esac
